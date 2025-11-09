@@ -1,0 +1,318 @@
+.mainCont {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    max-width: 100%;
+    height: 100vh;
+    overflow-y: hidden; /* Prevents vertical scrolling */
+    overflow-x: hidden !important; /* Prevents horizontal scrolling */
+    
+}
+
+.midSection {
+    width: 100%;
+    height: 100%;
+}
+.mainBox {
+    padding: 0.5rem 5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.mainBoxPortal {
+    width: 100%;
+    height: 100%;
+    padding: 7rem 0vw 4rem;
+    display: flex;
+    flex-direction: column;
+    
+}
+.mainBoxPortalCon {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #e5fbe946 #f1f1f100;
+    padding: 0rem 5vw;
+
+}
+.mainBoxPortalCon::-webkit-scrollbar {
+    position: absolute;
+    right: 0;
+    width: 4px;
+}
+.mainBoxPortalCon::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.mainBoxPortalCon::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+.mainBoxPortalCon::-webkit-scrollbar:hover {
+    background: #555;
+}
+.topColor {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    color: #027405 !important;
+}
+.heading {
+    font-family: 'Satisfy', cursive, sans-serif;
+    color: #027405;
+}
+.heading > div > i {
+    color: #027405;
+    font-size: 1.6rem;
+}
+.notification > * {
+    font-family: 'Satisfy', cursive, sans-serif;
+    font-size: 0.92rem !important;
+}
+.notification h1 {
+    font-size: 0.75rem !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+.notification h1 > i {
+    font-size: 0.4rem !important;
+}
+.topDis {
+    position: sticky;
+    top: 0 !important;
+    width: 100%;
+    height: auto;
+    background: #E5FBE9;
+    border-radius: 4px;
+    margin-top: 0 !important;
+    z-index: 99 !important;
+}
+.logo1 {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+.fontLine1 {
+    font-size: 1.2rem;
+}
+.fontLine2 {
+    font-size: 0.9rem;
+}
+.smallBut {
+    text-decoration: none !important;
+    border: none !important;
+    background: none !important;
+    font-size: 0.9rem;
+    font-family: 'Satisfy', cursive, sans-serif;
+    color: #027405;
+}
+.smallBut:focus {
+    color: #027405;
+}
+.smallBut:hover {
+    color: #025605;
+}
+.buttonType {
+    background: #E5FBE9;
+    border: solid 2px #027405;
+    font-size: 0.9rem;
+    font-family: 'Satisfy', cursive, sans-serif;
+    color: #027405;
+    border-radius: 0.2rem;
+}
+.buttonType:hover {
+    background: #c1d2c3;
+}
+.buttonType1 {
+    background: #027405;
+    border: solid 2px #027405;
+    font-size: 0.9rem;
+    font-family: 'Satisfy', cursive, sans-serif;
+    color: #E5FBE9;
+    border-radius: 0.2rem;
+}
+.buttonType1:hover {
+    background: #026205;
+}
+.selectClass {
+    width: 100%;
+}
+.testSetterTable {
+    width: 100%;
+    overflow-x: scroll;
+}
+.selectClass > select {
+    color: #027405 !important;
+    background-color: #E5FBE9 !important;
+    border: solid 2px #027405 !important;
+    box-shadow: none !important;
+}
+.selectClass > select > option:focus {
+    background-color: #CFF5D6 !important;
+}
+.selectClass1 select, .selectClass1 input, .testSetterTable th, .testSetterTable td {
+    color: #027405 !important;
+    font-family: 'Satisfy', cursive, sans-serif;
+    background-color: #E5FBE9 !important;
+    border: solid 2px #027405 !important;
+    box-shadow: none !important;
+}
+.selectClass1 label {
+    color: #027405 !important;
+    font-family: 'Satisfy', cursive, sans-serif;
+}
+.testSetterTable input, .testSetterTable select {
+    color: #027405 !important;
+    background-color: #E5FBE9 !important;
+    box-shadow: none !important;
+    height: 2rem !important;
+    border: none !important;
+}
+.selectClass1 select > option:focus, .selectClass1  input:focus {
+    background-color: #CFF5D6 !important;
+    box-shadow: none;
+}
+.testSetterTable th {
+    font-weight: normal !important;
+}
+.testSetterTable td {
+    padding: 0 !important;
+    vertical-align: middle;
+}
+.testSetterTable input[type="range"]::-webkit-slider-runnable-track {
+    margin: 0 1rem !important;
+    height: 6px;
+    background: #CFF5D6; /* Track color */
+    border-radius: 10px;
+    box-shadow: none;
+    width: 100%;
+}
+.testSetterTable input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    box-shadow: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #027405; /* Thumb color */
+    margin-top: -5px; /* Align center to track */
+}
+
+.mytext i, .mytext b {
+    font-size: 0.9rem;
+    color: #027405;
+    font-family: 'Satisfy', cursive, sans-serif;
+}
+.rangeSlider {
+    width: 100% !important;
+    /* accent-color: #027405 !important; */
+    border: none !important;
+    background: #027405 !important;
+}
+.decision {
+    font-size: 0.9rem;
+    color: #027405;
+    font-family: 'Satisfy', cursive, sans-serif;
+    background: #E5FBE9 !important;
+    padding: 1rem 4rem;
+    border: solid #027405 3px;
+    border-radius: 1rem;
+}
+@media (max-width: 995px) {
+    .mainBox {
+        padding: 0.3rem calc(5vw - 1.5rem);
+    }
+    .mainBoxPortal {
+        padding: 6.5rem 0 4rem;
+    }
+    .mainBoxPortalCon {
+        padding: 0 calc(5vw - 1.5rem);
+    }
+}
+@media (max-width: 768px) {
+    .mainBox {
+        padding: 0.3rem calc(5vw - 1.5rem);
+    }
+    .mainBoxPortal {
+        padding: 5.5rem 0 3.5rem;
+    }
+    .mainBoxPortalCon {
+        padding: 0 calc(5vw - 1.5rem);
+    }
+    .fontLine1 {
+        font-size: 1.1rem;
+    }
+    .fontLine2 {
+        font-size: 0.85rem;
+    }
+}
+@media (max-width: 655px) {
+    .mainBox {
+        padding: 2rem 0.7rem;
+    }
+    .mainBoxPortal {
+        padding: 5rem 0 3.6rem;
+    }
+    .mainBoxPortalCon {
+        padding: 0 0.7rem;
+    }
+    .fontLine1 {
+        font-size: 1rem;
+    }
+    .fontLine2 {
+        font-size: 0.8rem;
+    }
+    .topDis {
+        margin-top: 0rem !important;
+    }
+    .notification > * {
+        font-size: 0.7rem !important;
+    }
+    .notification h1 {
+        font-size: 0.65rem !important;
+    }
+    .notification h1 > i {
+        font-size: 0.3rem !important;
+    }
+    .smallBut {
+        text-decoration: none !important;
+        font-size: 0.75rem;
+        font-family: 'Satisfy', cursive, sans-serif;
+        color: #027405;
+    }
+    .buttonType {
+        background: #E5FBE9;
+        border: solid 2px #027405;
+        font-size: 0.75rem;
+        font-family: 'Satisfy', cursive, sans-serif;
+        color: #027405;
+        border-radius: 0.2rem;
+    }
+    .buttonType1 {
+        background: #027405;
+        border: solid 2px #027405;
+        font-size: 0.75rem;
+        font-family: 'Satisfy', cursive, sans-serif;
+        color: #E5FBE9;
+        border-radius: 0.2rem;
+    }
+    .buttonType:focus {
+        background: #E5FBE9;
+        border: solid 2px #027405;
+        font-size: 0.75rem;
+        font-family: 'Satisfy', cursive, sans-serif;
+        color: #027405;
+        border-radius: 0.2rem;
+    }
+    .buttonType1:focus {
+        background: #027405;
+        border: solid 2px #027405;
+        font-size: 0.75rem;
+        font-family: 'Satisfy', cursive, sans-serif;
+        color: #E5FBE9;
+        border-radius: 0.2rem;
+    }
+    .testSetterTable table {
+        width: 200%;
+    }
+    .testSetterTable input, .testSetterTable select, .testSetterTable th, .selectClass1 select, .selectClass1 input {
+        font-size: 0.8rem;
+    }
+}
+

@@ -1,0 +1,52 @@
+  .hambug {
+    border: none;
+    width: 30px; 
+    height: 20px; 
+    background: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; 
+    align-items: center; 
+    padding: 0;
+    transition: all 0.2s;
+  }
+  
+  .hambug > span {
+    border: 0;
+    margin: 0;
+    border-bottom: solid #005603 3px;
+    margin-right: auto;
+    background: rgb(16, 16, 16); 
+    border-radius: 1px;
+    opacity: 0.5;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .hambug > span:first-of-type {
+    width: 60%;
+  }
+  .hambug > span:nth-of-type(2) {
+    width: 40%;
+  }
+  .hambug > span:last-of-type {
+    width: 80%;
+  }
+  .hambug.active span:first-of-type {
+    transform: rotate(45deg) translateY(9.5px); /* Ensure proper alignment */
+    width: 80%;
+  }
+  
+  .hambug.active span:nth-of-type(2) {
+    opacity: 0; /* Hide the middle line */
+    width: 80%;
+
+  }
+  
+  .hambug.active span:last-of-type {
+    transform: rotate(-45deg) translateY(-9.5px); /* Ensure proper alignment */
+    width: 80%;
+
+  }
+  .hambug {
+    transform: scale(1)
+  }

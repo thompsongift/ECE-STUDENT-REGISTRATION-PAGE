@@ -1,0 +1,215 @@
+.navBar {
+    position: fixed;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    background-color: white;
+    z-index: 100 !important;
+}
+.navCon {
+    padding: 5px 5vw !important;
+    z-index: 10;
+}
+.topNav {
+    background: white;
+}
+.logo1 {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+.logo2 {
+    font-size: 1.1rem;
+    font-family: sans-serif;
+    text-decoration: none;
+    color: #027405;
+    }
+.showHam {
+    display: none;
+}
+
+.hideHam {
+    display: none;
+}
+
+.navButtons {
+    display: block;
+    color: #027405 !important;
+    margin: 0rem 2rem
+}
+.navButtons:hover, .navButtons:focus, .navButtons:active, .navButtons:active {
+    color: #003602 !important;
+}
+.greenFill {
+    background-color: #027405 !important;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.4rem 2rem;
+    border: 2px solid #027405;
+
+}
+.greenFill:hover, .greenFill:focus, .greenFill:active, .greenFill:active {
+    color: #027405;
+    background-color: white !important;
+    box-sizing: content-box;
+}
+.hideHam {
+    display: none;
+}
+.lightGreenBG {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background-color: #E5FBE9 !important;
+    padding: 0.5rem 0 !important;
+}
+.hLine1 {
+    display: none;
+}
+.underline {
+    width: 100%;
+    height: 3px;
+    background: #027405;
+}
+.notUnderline {
+    width: 100%;
+    height: 3px;
+    background: none;
+}
+@media (max-width: 995px) {
+    .navBar {
+        padding: 0;
+    }
+    
+    .navCon {
+        padding: 0.3rem calc(5vw - 1.5rem) !important;
+    }
+    .greenFill {
+        padding: 0.2rem 1.6rem;
+    }
+    .navFont {
+        font-size: 0.9rem;
+    }
+    .butFont {
+        font-size: 0.8rem;
+    }
+    .logo1 {
+        width: 20px;
+        height: 20px;
+    }
+    .logo2 {
+        font-size: 0.7rem;
+    }
+}
+@media (max-width: 768px) {
+    .navBar {
+        padding: 0;
+    }
+ 
+    .logo1 {
+        width: 20px;
+        height: 20px;
+    }
+    .logo2 {
+        font-size: 0.85rem;
+    }
+    .butFont {
+        font-size: 0.7rem;
+    }
+    
+}
+@media (max-width: 655px) {
+    .navBar {
+        position: fixed;
+        display: block;
+    }
+    .darkBG {
+        background: rgba(0, 0, 0, 0.721);
+        height: 100vh;
+        backdrop-filter: blur(10px);
+        z-index: 9;
+    }
+    .navCon {
+        display: block !important;
+        background: none !important;
+        box-shadow: none;
+        padding: 0 !important;
+        margin: 0;
+
+    }
+    .topNav {
+        padding: 1.1rem 0.7rem!important;
+        box-shadow: 0 3px 4px rgba(0, 0, 0, 0.09);
+    }
+    .showHam {
+        display: block;
+        margin-left: auto !important;
+    }
+    .blockNav {
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+    .hideHam {
+        display: block;
+        padding: 0 !important;
+    }
+    .navButtons, .greenFill {
+        margin: 8px !important;
+        padding: 0 !important;
+
+    }
+    
+    .navDrop {
+        display: none !important;
+        transition: all 0.4s ease-in-out;
+    }
+    .regButton {
+        display: flex !important;
+    }
+    .navFont {
+        color: #E5FBE9;
+        font-weight: bolder;
+    }
+    .navFont:hover {
+        color: #a8e3b4;
+    }
+    .active {
+        color: #24c429;
+    }
+    .active:hover {
+        color: #24c429 !important;
+    }
+    .lightGreenBG {
+        background: none !important;
+        padding: 0;
+    }
+    .hLine1 {
+        display: block;
+        color: #E5FBE9 !important;
+    }
+    .topPadding {
+        padding-top: 20px;
+    }
+    .underline {
+        display: none;
+    }
+    .notUnderline {
+        display: none;
+    }
+     .logo1 {
+        width: 22px;
+        height: 22px;
+    }
+    .logo2 {
+        font-size: 1rem;
+    }
+    .navFont {
+        font-size: 1.1rem;
+    }
+    .butFont {
+        font-size: 1rem;
+    }
+    
+    
+}

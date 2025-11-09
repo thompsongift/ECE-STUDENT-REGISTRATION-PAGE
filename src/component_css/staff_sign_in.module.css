@@ -1,0 +1,65 @@
+.formCon {
+    background: white !important;
+    width: 30%;
+    height: auto;
+    border-radius: 0.8rem;
+}
+.formCon > * {
+    color: #027405;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    font-size: 1rem ;
+    font-weight: 400;
+}
+.formCon > div > input {
+    border: #027405 2px solid !important;
+}
+.formCon > div:nth-of-type(1) {
+    background: #027405 !important;
+    width: 100% !important;
+    height: 1px !important;
+    border: none !important;
+}
+.formCon > div > input:focus {
+    border: #015804 2px solid !important;
+    box-shadow: 0 0 8px #015804 !important;
+}
+.formCon > button {
+    background-color: #027405 !important;
+    color: white;
+}
+.formCon > button:hover, .formCon > button:focus, .formCon > button:active, .formCon > button:active {
+    background-color: #015804 !important;
+    color: white !important;
+}
+.formCon > a:hover, .formCon > a:focus, .formCon > a:active, .formCon > a:active {
+    background-color: #015804 !important;
+}
+.retPass {
+    text-decoration: none !important;
+    color: #027405 !important; 
+}
+.formCon > button > div {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .formCon {
+        width: 35%;
+    }
+}
+@media (max-width: 995px) {
+    .formCon {
+        width: 40%;
+    }
+}
+@media (max-width: 768px) {
+    .formCon {
+        width: 50%;
+    }
+}
+@media (max-width: 655px) {
+    .formCon {
+        width: 90%;
+    }
+}

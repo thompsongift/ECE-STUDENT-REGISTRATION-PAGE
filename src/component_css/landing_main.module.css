@@ -1,0 +1,67 @@
+.heading1, .heading2, .heading3, .heading4 {
+    font-family: 'Comic Sans MS', 'sans-serif', 'Segoe UI', Tahoma, cursive;
+    color: #E5FBE9;
+    line-height: 1.2;
+}
+
+.heading1 {
+    font-size: 2.7rem;
+}
+.heading2 {
+    font-size: 1.8rem;
+}
+.heading3 {
+    font-size: 1rem;
+}
+.heading4 {
+    font-size: 0.9rem;
+}
+.announceContainer {
+    min-height: 4rem;
+    text-align: center;
+    background: #E5FBE9;
+    color: black;
+    font-size: 0.9rem;
+
+}
+
+@media (max-width: 995px) {
+    .heading1 {
+        font-size: 2.5rem;
+    }
+    .heading2 {
+        font-size: 1.6rem;
+    }
+    .heading3 {
+        font-size: 0.9rem;
+    }
+    .heading4 {
+        font-size: 0.8rem;
+    }
+    .announceContainer {
+        font-size: 0.8rem;
+    }
+}
+@media (max-width: 768px) {
+    
+}
+@media (max-width: 655px) {
+    .heading1 {
+        font-size: 2.2rem;
+    }
+    .heading2 {
+        font-size: 1.4rem;
+    }
+    .heading3, .heading4{
+        font-size: 0.8rem;
+    }
+    .announceContainer {
+        font-size: 0.8rem;
+    }
+    .fixed {
+        position: absolute;
+        bottom: 2rem;
+        right: 1rem;
+        
+    }
+}

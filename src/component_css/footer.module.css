@@ -1,0 +1,22 @@
+.footerSection {
+    width: 100%;
+    height: 5%;
+    bottom: 0;
+    left: 0;
+    background: #025a05;
+}
+@media (max-width: 995px) {
+    .footerSection {
+        height: 5%;
+    }
+}
+@media (max-width: 768px) {
+    .footerSection {
+        height: 4%;
+    }
+}
+@media (max-width: 655px) {
+    .footerSection {
+        height: 4%;
+    }
+}

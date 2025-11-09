@@ -1,14 +1,64 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import classes from "../component_css/sign_in_page.module.css";
+import country from "../assets/countries.json";
+import state from "../assets/states.json";
+import lga from "../assets/lgas.json";
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Form1({
   submisssion,
   getData,
   getErrorMes,
   getError,
-  isOnline,
+  setMessage,
 }) {
+  function normalizePhoneNumber(number) {
+    // Remove spaces or dashes
+    if (!number) return "";
+    number = number.replace(/\s|-/g, "");
+
+    // If it starts with +234, convert to local format
+    if (number.startsWith("+234")) {
+      number = "0" + number.slice(4);
+    }
+
+    // If it doesn't start with 0, add one
+    if (!number.startsWith("0")) {
+      number = "0" + number;
+    }
+
+    return number;
+  }
+  const mergeFormFields = (prev, newData) => {
+    const allowedKeys = Object.keys(prev);
+    const filtered = Object.fromEntries(
+      Object.entries(newData).filter(([k]) => allowedKeys.includes(k))
+    );
+    return {
+      ...prev,
+      ...filtered,
+      date_of_birth: filtered.date_of_birth
+        ? filtered.date_of_birth.split("T")[0]
+        : "",
+      phone_number: normalizePhoneNumber(filtered.phone_number),
+      guardian_phone_number: normalizePhoneNumber(
+        filtered.guardian_phone_number
+      ),
+    };
+  };
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  const isToken = !!token;
+  const [disMessage, setDisMessage] = useState(
+    "You have successfully completed your registration."
+  );
+  const [roll, setRoll] = useState(isToken);
   const [listOfState, setListOfState] = useState([]);
   const [listOfStateOrigin, setListOfStateOrigin] = useState([]);
   const [listOfLocalGovtOrigin, setListOfLocalGovtOrigin] = useState([]);
@@ -145,6 +195,7 @@ export default function Form1({
   };
 
   // Validation
+
   useEffect(() => {
     setValidation({
       last_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.last_name),
@@ -188,144 +239,91 @@ export default function Form1({
       feedback:
         formData.feedback.trim().length >= 5 &&
         formData.feedback.trim().length <= 1000,
-      passport_image: validateImage(formData.passport_image),
+      passport_image: validateImage(formData.passport_image) || isToken,
     });
   }, [formData]);
 
-  // Country of Origin
+  // Fetch Existing Data if Token is Present
+
   useEffect(() => {
     const controller = new AbortController();
-    const signal = controller.signal;
-
-    (async () => {
-      try {
-        const response = await fetch(
-          "https://api.first.org/data/v1/countries",
-          { signal }
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        let data = result.data;
-        data = Object.values(data);
-        data = data.map((count) => count.country).sort();
-        setListOfCountry(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    })();
-
-    return () => controller.abort();
-  }, [isOnline]);
-
-  // State of Origin
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    (async () => {
-      try {
-        if (formData.nationality === "Nigeria") {
+    if (isToken) {
+      (async () => {
+        try {
           const response = await fetch(
-            "https://nga-states-lga.onrender.com/fetch",
-            { signal }
+            `https://api.eceunn.com/api/student/data?token=${token}`,
+            {
+              signal: controller.signal,
+            }
           );
-          if (!response.ok) throw new Error("Failed to fetch data");
-          const result = await response.json();
-          setListOfStateOrigin(result);
+          if (!response.ok) {
+            const errs = await response.json();
+            if (errs.message) {
+              throw new Error(errs.message);
+            } else if (errs.error) {
+              throw new Error(errs.error);
+            }
+          }
+          const { data, message } = await response.json();
+          if (data.purpose == "view") {
+            getData(data.data);
+            setMessage(message);
+            window.history.replaceState({}, document.title, "/");
+            submisssion(true);
+          } else {
+            setRoll(false);
+            setFormData((prev) => mergeFormFields(prev, data.data));
+            setDisMessage(message);
+          }
+        } catch (error) {
+          setSubmitted(false);
+          setSubmitError(true);
+          setSubmitErrorMes([error.message]);
+          setButtonColor(true);
+          await wait(4000);
+          navigate("/");
         }
-        if (formData.nationality !== "Nigeria" && formData.nationality !== "") {
-          setListOfStateOrigin(["Foreigner"]);
-          return;
-        } else {
-          return;
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    })();
+      })();
+    }
 
     return () => controller.abort();
-  }, [formData.nationality, isOnline]);
+  }, []);
 
-  // State of Residence
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+    setListOfCountry(country);
+  }, []);
 
-    (async () => {
-      try {
-        const response = await fetch(
-          "https://nga-states-lga.onrender.com/fetch",
-          { signal }
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setListOfState(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    })();
-
-    return () => controller.abort();
-  }, [isOnline]);
-
-  // Local Government of Origin
   useEffect(() => {
-    const { state_of_origin, nationality } = formData;
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    (async () => {
+    if (formData.nationality === "Nigeria") {
       try {
-        if (!state_of_origin) {
-          return;
-        }
-        if (state_of_origin === "Foreigner" || nationality !== "Nigeria") {
-          setListOfLocalGovtOrigin(["Foreigner"]);
-          return;
-        }
-
-        const response = await fetch(
-          `https://nga-states-lga.onrender.com/?state=${state_of_origin}`,
-          { signal }
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setListOfLocalGovtOrigin(result);
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          console.error("Error fetching data:", error);
-        }
+        setListOfStateOrigin(state);
+      } catch (err) {
+        setListOfStateOrigin([]);
       }
-    })();
+    } else if (formData.nationality) {
+      setListOfStateOrigin(["Foreigner"]);
+    }
+  }, [formData.nationality]);
 
-    return () => controller.abort();
-  }, [formData.state_of_origin, formData.nationality, isOnline]);
-
-  // Local Government of Residence
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+    if (!formData.state_of_origin || formData.nationality !== "Nigeria") {
+      setListOfLocalGovtOrigin(["Foreigner"]);
+      return;
+    }
+    const result = lga[formData.state_of_origin];
+    setListOfLocalGovtOrigin(result);
+  }, [formData.state_of_origin, formData.nationality]);
 
-    (async () => {
-      try {
-        const response = await fetch(
-          `https://nga-states-lga.onrender.com/?state=${formData.state_of_residence}`,
-          { signal }
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setListOfLocalGovtResi(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    })();
+  useEffect(() => {
+    setListOfState(state);
+  }, []);
 
-    return () => controller.abort();
-  }, [formData.state_of_residence, isOnline]);
+  useEffect(() => {
+    const result = lga[formData.state_of_residence];
+    setListOfLocalGovtResi(result);
+  }, [formData.state_of_residence]);
 
-  // Handle Error Message
+  //Handle Error Message
   useEffect(() => {
     getErrorMes(submitErrorMes);
     getError(submitError);
@@ -333,13 +331,13 @@ export default function Form1({
 
   // Handle Submission Logic
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevents the browser from clearing the fields after submission
+    e.preventDefault();
     setButtonColor(false);
     setSubmitted(true);
     setSubmitError(false);
     setSubmitErrorMes([]);
 
-    // Validation Logic
+    // Validation logic
     const newValidation = {
       last_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.last_name),
       first_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.first_name),
@@ -382,11 +380,12 @@ export default function Form1({
       feedback:
         formData.feedback.trim().length >= 5 &&
         formData.feedback.trim().length <= 1000,
-      passport_image: validateImage(formData.passport_image),
+      passport_image: validateImage(formData.passport_image) || isToken,
     };
 
     setValidation(newValidation);
 
+    // Format phone numbers
     const updatedForm = {
       ...formData,
       ["phone_number"]: formData.phone_number.startsWith("+")
@@ -397,95 +396,104 @@ export default function Form1({
         : Number(formData.guardian_phone_number),
     };
 
-    const form = new FormData();
+    // ✅ Prepare request body dynamically
+    let bodyData;
+    let endpoint;
 
-    for (const key in updatedForm) {
-      form.append(key, updatedForm[key]);
+    if (isToken) {
+      // If updating via token
+      bodyData = new FormData();
+      for (const key in updatedForm) {
+        // if (key != "passport_image") {
+        //   bodyData.append(key, updatedForm[key]);
+        // }
+        bodyData.append(key, updatedForm[key]);
+      }
+
+      bodyData.append("token", token);
+
+      endpoint = `https://api.eceunn.com/api/student/data/edit`;
+    } else {
+      // Normal registration (with file)
+      bodyData = new FormData();
+      for (const key in updatedForm) {
+        bodyData.append(key, updatedForm[key]);
+      }
+      endpoint = "https://api.eceunn.com/api/create/student";
     }
 
-    // Check if form is valid 🔍😒
     try {
       if (Object.values(newValidation).every((isValid) => isValid)) {
         const controller = new AbortController();
         const timeout = setTimeout(() => {
           controller.abort();
           setSubmitted(false);
-          setSubmitError(true); // Shows us an Error below the submit button
-          setSubmitErrorMes(["Unable to submit data. Please try again."]); // Error Message
+          setSubmitError(true);
+          setSubmitErrorMes(["Unable to submit data. Please try again."]);
           setButtonColor(true);
-        }, 30000);
-        // API endpoint for the form.
-        // Do not use '/registration' as your end point [If you must go to vite.config.js file and comment out the server field before building]
+        }, 15000);
 
         if (!navigator.onLine) {
           setSubmitted(false);
-          setSubmitError(true); // Shows us an Error below the submit button
-          setSubmitErrorMes(["Can't connect to the server."]); // Error Message
+          setSubmitError(true);
+          setSubmitErrorMes(["Can't connect to the server."]);
           clearTimeout(timeout);
           setButtonColor(true);
+          return;
         }
-        const response = await fetch(
-          //https://ece-unn-db-backend-main.onrender.com/api/create/student
-          "https://ece-unn-db-backend-main.onrender.com/api/create/student",
-          {
-            method: "POST",
-            body: form,
-            signal: controller.signal,
-          }
-        );
-        // Response data must have identical fields to that of the request and must all be strings.
-        // The file URL location of the file(image) in the CDN must be returned
+        //console.log(Object.fromEntries(bodyData.entries()));
 
+        //✅ Fetch to appropriate endpoint
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {},
+          body: bodyData,
+          signal: controller.signal,
+        });
+        console.log(response);
         if (!response) {
           clearTimeout(timeout);
           setSubmitted(false);
-          setSubmitError(true); // Shows us an Error below the submit button
-          setSubmitErrorMes(["No response from server"]); // Error Message
+          setSubmitError(true);
+          setSubmitErrorMes(["No response from server"]);
           setButtonColor(true);
+          return;
         }
-        // const check = await response.text();
-        // console.log(check);
 
         const ServerRes = await response.json();
 
-        if (
-          ServerRes.hasOwnProperty("status") &&
-          ServerRes["status"] == "failed"
-        ) {
+        if (ServerRes.status === "failed") {
           clearTimeout(timeout);
           setSubmitted(false);
-          setSubmitError(true); // Shows us an Error below the submit button
-          setSubmitErrorMes([ServerRes.message]); // Error Message
+          setSubmitError(true);
+          setSubmitErrorMes([ServerRes.message]);
           setButtonColor(true);
           return;
         }
 
         if (ServerRes.errors) {
-          const { errors } = ServerRes;
-          let list = [];
-          for (let key in errors) {
-            list.push(errors[key][0]);
-          }
+          const list = Object.values(ServerRes.errors).map((e) => e[0]);
           clearTimeout(timeout);
           setSubmitted(false);
-          setSubmitError(true); // Shows us an Error below the submit button
-          setSubmitErrorMes([...list]); // Error Message
+          setSubmitError(true);
+          setSubmitErrorMes(list);
           setButtonColor(true);
           return;
         }
-        const { student } = ServerRes.data;
+
         clearTimeout(timeout);
+        const { student } = ServerRes;
         getData(student);
-        //console.log(student);
+        setMessage(disMessage);
         submisssion(true);
-      } else {
-        alert("Please fill out all required fields."); // this is basically useless 😂
       }
     } catch (error) {
-      console.error("Error submittiong data:", error);
+      //console.error("Error submitting data:", error);
     }
   };
-
+  if (roll) {
+    return <></>;
+  }
   // Components
   return (
     <>
@@ -500,6 +508,7 @@ export default function Form1({
           <input
             name="last_name"
             type="text"
+            value={formData.last_name}
             className={`form-control ${
               validation.last_name ? "is-valid" : "is-invalid"
             }`}
@@ -519,6 +528,7 @@ export default function Form1({
           <input
             name="first_name"
             type="text"
+            value={formData.first_name}
             className={`form-control ${
               validation.first_name ? "is-valid" : "is-invalid"
             }`}
@@ -538,6 +548,7 @@ export default function Form1({
           <input
             name="middle_name"
             type="text"
+            value={formData.middle_name}
             className={`form-control ${
               validation.middle_name ? "is-valid" : "is-invalid"
             }`}
@@ -556,6 +567,8 @@ export default function Form1({
           <input
             name="reg_number"
             type="text"
+            value={formData.reg_number}
+            disabled={isToken}
             className={`form-control ${
               validation.reg_number ? "is-valid" : "is-invalid"
             }`}
@@ -574,6 +587,7 @@ export default function Form1({
           </label>
           <select
             name="level"
+            value={formData.level}
             className={`form-select ${
               validation.level ? "is-valid" : "is-invalid"
             }`}
@@ -584,8 +598,8 @@ export default function Form1({
             <option selected disabled value="">
               Select...
             </option>
-            {[100, 200, 300, 400, 500].map((level) => {
-              return <option>{level}</option>;
+            {[100, 200, 300, 400, 500].map((level, index) => {
+              return <option key={index}>{level}</option>;
             })}
           </select>
           <div className="valid-feedback">Good!</div>
@@ -600,6 +614,7 @@ export default function Form1({
           <input
             name="date_of_birth"
             type="date"
+            value={formData.date_of_birth}
             className={`form-control ${
               validation.date_of_birth ? "is-valid" : "is-invalid"
             }`}
@@ -625,6 +640,7 @@ export default function Form1({
                 name="gender"
                 id="genderMale"
                 value="Male"
+                checked={formData.gender === "Male"}
                 onChange={handleChange}
                 required
               />
@@ -641,6 +657,7 @@ export default function Form1({
                 name="gender"
                 id="genderFemale"
                 value="Female"
+                checked={formData.gender === "Female"}
                 onChange={handleChange}
                 required
               />
@@ -668,6 +685,8 @@ export default function Form1({
           <input
             name="email"
             type="email"
+            disabled={isToken}
+            value={formData.email}
             className={`form-control ${
               validation.email ? "is-valid" : "is-invalid"
             }`}
@@ -687,6 +706,7 @@ export default function Form1({
           <input
             name="phone_number"
             type="tel"
+            value={formData.phone_number}
             className={`form-control ${
               validation.phone_number ? "is-valid" : "is-invalid"
             }`}
@@ -706,6 +726,7 @@ export default function Form1({
           <input
             name="permanent_address"
             type="text"
+            value={formData.permanent_address}
             className={`form-control ${
               validation.permanent_address ? "is-valid" : "is-invalid"
             }`}
@@ -724,6 +745,7 @@ export default function Form1({
           </label>
           <select
             name="nationality"
+            value={formData.nationality}
             className={`form-select ${
               validation.nationality ? "is-valid" : "is-invalid"
             }`}
@@ -731,12 +753,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            {listOfCountry.map((country) => (
-              <option>{country}</option>
-            ))}
+            {listOfCountry ? (
+              listOfCountry.map((country, index) => (
+                <option key={index} value={country}>
+                  {country}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">Please select a country!</div>
@@ -749,6 +777,7 @@ export default function Form1({
           </label>
           <select
             name="state_of_origin"
+            value={formData.state_of_origin}
             className={`form-select ${
               validation.state_of_origin ? "is-valid" : "is-invalid"
             }`}
@@ -756,12 +785,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            {listOfStateOrigin.map((state) => (
-              <option>{state}</option>
-            ))}
+            {listOfStateOrigin ? (
+              listOfStateOrigin.map((state, index) => (
+                <option key={index} value={state}>
+                  {state}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">Please select a state!</div>
@@ -774,6 +809,7 @@ export default function Form1({
           </label>
           <select
             name="lga_of_origin"
+            value={formData.lga_of_origin}
             className={`form-select ${
               validation.lga_of_origin ? "is-valid" : "is-invalid"
             }`}
@@ -781,12 +817,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            {listOfLocalGovtOrigin.map((local) => (
-              <option>{local}</option>
-            ))}
+            {listOfLocalGovtOrigin ? (
+              listOfLocalGovtOrigin.map((lga, index) => (
+                <option key={index} value={lga}>
+                  {lga}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">
@@ -808,6 +850,7 @@ export default function Form1({
                 name="accommodation"
                 id="hostel"
                 value="Hostel"
+                checked={formData.accommodation === "Hostel"}
                 onChange={handleChange}
                 required
               />
@@ -824,6 +867,7 @@ export default function Form1({
                 name="accommodation"
                 id="off-Campus"
                 value="Off-Campus"
+                checked={formData.accommodation === "Off-Campus"}
                 onChange={handleChange}
                 required
               />
@@ -850,6 +894,7 @@ export default function Form1({
           <input
             name="residential_address"
             type="text"
+            value={formData.residential_address}
             className={`form-control ${
               validation.residential_address ? "is-valid" : "is-invalid"
             }`}
@@ -868,6 +913,7 @@ export default function Form1({
           </label>
           <select
             name="religion"
+            value={formData.religion}
             className={`form-select ${
               validation.religion ? "is-valid" : "is-invalid"
             }`}
@@ -875,13 +921,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            <option>Christianity</option>
-            <option>Islam</option>
-            <option>Traditional Religion</option>
-            <option>Other</option>
+            {["Christianity", "Islam", "Traditional Religion", "Other"].map(
+              (religion, index) => {
+                return (
+                  <option key={index} value={religion}>
+                    {religion}
+                  </option>
+                );
+              }
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">Please select a religion!</div>
@@ -894,6 +945,7 @@ export default function Form1({
           </label>
           <select
             name="state_of_residence"
+            value={formData.state_of_residence}
             className={`form-select ${
               validation.state_of_residence ? "is-valid" : "is-invalid"
             }`}
@@ -901,12 +953,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            {listOfState.map((state) => (
-              <option>{state}</option>
-            ))}
+            {listOfState ? (
+              listOfState.map((state, index) => (
+                <option key={index} value={state}>
+                  {state}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">Please select a state!</div>
@@ -919,6 +977,7 @@ export default function Form1({
           </label>
           <select
             name="lga_of_residence"
+            value={formData.lga_of_residence}
             className={`form-select ${
               validation.lga_of_residence ? "is-valid" : "is-invalid"
             }`}
@@ -926,12 +985,18 @@ export default function Form1({
             onChange={handleChange}
             required
           >
-            <option selected disabled value="">
+            <option disabled value="">
               Select...
             </option>
-            {listOfLocalGovtResi.map((state) => (
-              <option>{state}</option>
-            ))}
+            {listOfLocalGovtResi ? (
+              listOfLocalGovtResi.map((lga, index) => (
+                <option key={index} value={lga}>
+                  {lga}
+                </option>
+              ))
+            ) : (
+              <></>
+            )}
           </select>
           <div className="valid-feedback">Good!</div>
           <div className="invalid-feedback">
@@ -947,6 +1012,7 @@ export default function Form1({
           <input
             name="guardian_name"
             type="text"
+            value={formData.guardian_name}
             className={`form-control ${
               validation.guardian_name ? "is-valid" : "is-invalid"
             }`}
@@ -966,6 +1032,7 @@ export default function Form1({
           <input
             name="guardian_phone_number"
             type="tel"
+            value={formData.guardian_phone_number}
             className={`form-control ${
               validation.guardian_phone_number ? "is-valid" : "is-invalid"
             }`}
@@ -985,6 +1052,7 @@ export default function Form1({
           <input
             name="guardian_email"
             type="email"
+            value={formData.guardian_email}
             className={`form-control ${
               validation.guardian_email ? "is-valid" : "is-invalid"
             }`}
@@ -998,26 +1066,29 @@ export default function Form1({
 
         {/* Image Upload */}
 
-        <div className="col-md-12">
-          <label htmlFor="imageUpload" className="form-label">
-            Upload Passport Image (Max 2MB)
-          </label>
-          <input
-            name="passport_image"
-            type="file"
-            className={`form-control ${
-              validation.passport_image ? "is-valid" : "is-invalid"
-            }`}
-            id="imageUpload"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          {!validation.file && (
-            <div className="invalid-feedback">{errorMessage}</div>
-          )}
+        {!isToken && (
+          <div className="col-md-12">
+            <label htmlFor="imageUpload" className="form-label">
+              Upload Passport Image (Max 2MB)
+            </label>
+            <input
+              name="passport_image"
+              type="file"
+              className={`form-control ${
+                validation.passport_image ? "is-valid" : "is-invalid"
+              }`}
+              id="imageUpload"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={isToken}
+            />
+            {!validation.file && (
+              <div className="invalid-feedback">{errorMessage}</div>
+            )}
 
-          {validation.file && <div className="valid-feedback">Good!</div>}
-        </div>
+            {validation.file && <div className="valid-feedback">Good!</div>}
+          </div>
+        )}
 
         {/* Suggestions */}
         <div className={`col-md-12`}>
@@ -1028,6 +1099,7 @@ export default function Form1({
             rows={6}
             name="feedback"
             type="text"
+            value={formData.feedback}
             className={`form-control ${classes.height} ${
               validation.feedback ? "is-valid" : "is-invalid"
             }`}
@@ -1063,7 +1135,7 @@ export default function Form1({
               "Submit"
             ) : (
               <div
-                class={`spinner-border text-secondary ${classes.smallSpinner}`}
+                className={`spinner-border text-secondary ${classes.smallSpinner}`}
                 role="status"
               ></div>
             )}
