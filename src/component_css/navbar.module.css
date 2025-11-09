@@ -5,6 +5,8 @@
     padding: 0;
     background-color: white;
     z-index: 100 !important;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.09);
+
 }
 .navCon {
     padding: 5px 5vw !important;
@@ -122,6 +124,7 @@
     .navBar {
         position: fixed;
         display: block;
+        box-shadow: none !important;
     }
     .darkBG {
         background: rgba(0, 0, 0, 0.721);

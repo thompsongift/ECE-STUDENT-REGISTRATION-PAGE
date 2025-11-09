@@ -273,6 +273,7 @@ export default function Form1({
           } else {
             setRoll(false);
             setFormData((prev) => mergeFormFields(prev, data.data));
+            window.history.replaceState({}, "", `/?token=${token}`);
             setDisMessage(message);
             setMessage(
               "Please fill the following fields carefully and honestly"
@@ -407,14 +408,9 @@ export default function Form1({
       // If updating via token
       bodyData = new FormData();
       for (const key in updatedForm) {
-        // if (key != "passport_image") {
-        //   bodyData.append(key, updatedForm[key]);
-        // }
         bodyData.append(key, updatedForm[key]);
       }
-
       bodyData.append("token", token);
-
       endpoint = `https://api.eceunn.com/api/student/data/edit`;
     } else {
       // Normal registration (with file)
@@ -490,14 +486,12 @@ export default function Form1({
           getData(data.student);
           setMessage(message);
           window.history.replaceState({}, document.title, "/");
-
           submisssion(true);
         } else {
           const { student } = ServerRes;
           getData(student);
           setMessage(disMessage);
           window.history.replaceState({}, document.title, "/");
-
           submisssion(true);
         }
       }
