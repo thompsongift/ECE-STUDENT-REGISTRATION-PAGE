@@ -42,9 +42,6 @@ function AlertMessage({ onLine, error, errorMes, isSubmited, removeError }) {
 }
 
 export default function RegForm({}) {
-  //const location = useLocation();
-
-  //const [editDetails, setEditDetails] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [returnedData, setReturnedData] = useState({});
   const [submitError, setSubmitError] = useState(false);
@@ -56,12 +53,27 @@ export default function RegForm({}) {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
+    const checkInternet = async () => {
+      try {
+        const res = await fetch("https://www.google.com/favicon.ico", {
+          mode: "no-cors",
+        });
+        setIsOnline(true);
+      } catch {
+        setIsOnline(false);
+      }
+    };
+
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+
+    const interval = setInterval(checkInternet, 10000);
+    checkInternet();
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
     };
   }, []);
 
@@ -91,9 +103,7 @@ export default function RegForm({}) {
                 Student Database
               </div>
               {!submitted && (
-                <div className={`fw-light text-center`}>
-                  Please fill the following fields carefully and honestly
-                </div>
+                <div className={`fw-light text-center`}>{message}</div>
               )}
               {submitted && (
                 <div className={`fw-light pb-3 text-center`}>{message}</div>

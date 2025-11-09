@@ -274,6 +274,9 @@ export default function Form1({
             setRoll(false);
             setFormData((prev) => mergeFormFields(prev, data.data));
             setDisMessage(message);
+            setMessage(
+              "Please fill the following fields carefully and honestly"
+            );
           }
         } catch (error) {
           setSubmitted(false);
@@ -450,7 +453,7 @@ export default function Form1({
           body: bodyData,
           signal: controller.signal,
         });
-        console.log(response);
+
         if (!response) {
           clearTimeout(timeout);
           setSubmitted(false);
@@ -482,10 +485,21 @@ export default function Form1({
         }
 
         clearTimeout(timeout);
-        const { student } = ServerRes;
-        getData(student);
-        setMessage(disMessage);
-        submisssion(true);
+        if (token) {
+          const { data, message } = ServerRes;
+          getData(data.student);
+          setMessage(message);
+          window.history.replaceState({}, document.title, "/");
+
+          submisssion(true);
+        } else {
+          const { student } = ServerRes;
+          getData(student);
+          setMessage(disMessage);
+          window.history.replaceState({}, document.title, "/");
+
+          submisssion(true);
+        }
       }
     } catch (error) {
       //console.error("Error submitting data:", error);

@@ -26,6 +26,11 @@ export default function SignIn({ title, purpose }) {
 
     try {
       setLoading(true);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => {
+        controller.abort();
+        throw new Error("Request timed out. Please try again.");
+      }, 20000);
 
       const response = await fetch(
         `https://api.eceunn.com/api/student/magic-link`,
@@ -33,9 +38,15 @@ export default function SignIn({ title, purpose }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reg_number: reg_number, purpose: purpose }),
+          signal: controller.signal,
         }
       );
+      if (!response) {
+        clearTimeout(timeout);
+        throw new Error("No response from server. Please try again.");
+      }
       if (!response.ok) {
+        clearTimeout(timeout);
         const errs = await response.json();
         if (errs.errors) {
           throw new Error(errs.errors.reg_number[0]);
@@ -46,6 +57,7 @@ export default function SignIn({ title, purpose }) {
         }
       }
       const { message } = await response.json();
+      clearTimeout(timeout);
       setSuccess(true);
       setSuccessMessage(message);
       setLoading(false);
