@@ -27,7 +27,9 @@ export default function NavButtons({
           fill && !isHamToggled ? classes.greenFill : classes.navButtons
         }`}
         // Temporary
-        onClick={onClick}
+        onClick={(e) => {
+          onClick(e);
+        }}
       >
         <p
           className={`my-0 mx-1 ${classes.navFont} ${

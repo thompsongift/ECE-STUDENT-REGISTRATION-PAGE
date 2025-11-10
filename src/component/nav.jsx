@@ -92,14 +92,18 @@ export default function Navbar({}) {
                         ? "https://admin.eceunn.com"
                         : ""
                     }
-                    onClick={() => {
+                    onClick={(e) => {
                       if (titleName == "Register") {
+                        e.preventDefault();
                         navigate("/register");
                       } else if (titleName == "Update details") {
+                        e.preventDefault();
                         navigate("/updatedetails");
                       } else if (titleName == "View details") {
+                        e.preventDefault();
                         navigate("/viewdetails");
                       } else if (titleName == "Home") {
+                        e.preventDefault();
                         navigate("/");
                       }
                     }}
