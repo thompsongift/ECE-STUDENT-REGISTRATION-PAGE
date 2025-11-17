@@ -5,7 +5,6 @@ import defaultImage from "../assets/Picture1.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import NavButtons from "./nav_button";
 import { useState, useEffect, useContext } from "react";
-import { UserContext } from "./use_context";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar({}) {
@@ -22,11 +21,14 @@ export default function Navbar({}) {
       titleName: "View details",
       fill: false,
     },
+    {
+      titleName: "View feedback",
+      fill: false,
+    },
     { titleName: "Staff portal", fill: false },
     { titleName: "Register", fill: true },
   ]);
   const navigate = useNavigate();
-  const { setPage } = useContext(UserContext);
   const [isHamToggled, setIsHamToggled] = useState(false);
 
   useEffect(() => {
@@ -93,18 +95,27 @@ export default function Navbar({}) {
                         : ""
                     }
                     onClick={(e) => {
-                      if (titleName == "Register") {
-                        e.preventDefault();
-                        navigate("/register");
-                      } else if (titleName == "Update details") {
-                        e.preventDefault();
-                        navigate("/updatedetails");
-                      } else if (titleName == "View details") {
-                        e.preventDefault();
-                        navigate("/viewdetails");
-                      } else if (titleName == "Home") {
-                        e.preventDefault();
-                        navigate("/");
+                      switch (titleName) {
+                        case "Register":
+                          e.preventDefault();
+                          navigate("/register", { replace: true });
+                          break;
+                        case "Update details":
+                          e.preventDefault();
+                          navigate("/updatedetails");
+                          break;
+                        case "View details":
+                          e.preventDefault();
+                          navigate("/viewdetails");
+                          break;
+                        case "View feedback":
+                          e.preventDefault();
+                          navigate("/viewfeedback");
+                          break;
+                        case "Home":
+                          e.preventDefault();
+                          navigate("/");
+                          break;
                       }
                     }}
                   />

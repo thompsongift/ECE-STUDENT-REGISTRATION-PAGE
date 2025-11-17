@@ -5,8 +5,9 @@ import classes from "../component_css/landing_main.module.css";
 import pageSetup from "../component_css/page_setup.module.css";
 import ButtonType1 from "./button_type_1";
 import { useNavigate } from "react-router-dom";
+import StarRating from "./rating";
 
-export default function LandingMain() {
+export default function LandingMain({ handle, setHandle }) {
   const navigate = useNavigate();
 
   return (
@@ -15,7 +16,7 @@ export default function LandingMain() {
         className={`px-0 py-5 m-0 d-flex align-items-center ${pageSetup.midSection}`}
       >
         <div
-          className={`container-fluid m-0 w-100 h-75 bg-dark bg-opacity-50 ${pageSetup.mainBox}`}
+          className={`container-fluid m-0 w-100 bg-dark bg-opacity-50 ${pageSetup.mainBox}`}
         >
           <h1 className={`${classes.heading1} my-3 w-100 fw-bold`}>
             Manage Student Information Seamlessly
@@ -41,21 +42,21 @@ export default function LandingMain() {
           >
             <i>Click on the above for student registration</i>
           </h1>
-          {/* <div
-            className={`w-100 mt-3 mb-0 mb-md-3 d-flex justify-content-center align-items-center ${classes.announceContainer}`}
-          >
-            <i>No Announcement</i>
-          </div> */}
-          <ul
-            className={`nav d-flex align-items-center px-0 py-1 m-0 ${classes.fixed}`}
-          >
-            {/* <ButtonType1
-              titleName="Quick Scan"
-              fill={true}
-              icon={"bi bi-camera-fill"}
-              fixed={true}
-            /> */}
-          </ul>
+          {
+            <div
+              className={`w-100 mt-3 mb-0 mb-md-3 ${pageSetup.scrollThin} ${
+                handle ? "d-block" : "d-flex justify-content-center"
+              } ${classes.announceContainer}`}
+            >
+              {handle && (
+                <StarRating
+                  setHandle={() => {
+                    setHandle(false);
+                  }}
+                />
+              )}
+            </div>
+          }
         </div>
       </div>
     </>

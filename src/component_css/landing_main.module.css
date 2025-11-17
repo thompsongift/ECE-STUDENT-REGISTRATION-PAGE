@@ -17,12 +17,13 @@
     font-size: 0.9rem;
 }
 .announceContainer {
-    min-height: 4rem;
+    max-height: 40rem;
     text-align: center;
     background: #E5FBE9;
     color: black;
     font-size: 0.9rem;
-
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 @media (max-width: 995px) {

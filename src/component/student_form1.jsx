@@ -198,9 +198,18 @@ export default function Form1({
 
   useEffect(() => {
     setValidation({
-      last_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.last_name),
-      first_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.first_name),
-      middle_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.middle_name),
+      last_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.last_name.trim()
+        ),
+      first_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.first_name.trim()
+        ),
+      middle_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.middle_name.trim()
+        ) || formData.middle_name == "",
       reg_number: /^\d{4}\/\d{6}$/.test(formData.reg_number),
       level: /^[0-5]{3}$/.test(formData.level),
       date_of_birth: (() => {
@@ -276,7 +285,7 @@ export default function Form1({
             window.history.replaceState({}, "", `/?token=${token}`);
             setDisMessage(message);
             setMessage(
-              "Please fill the following fields carefully and honestly"
+              "Please fill the correct the fields you which to carefully and honestly"
             );
           }
         } catch (error) {
@@ -288,6 +297,8 @@ export default function Form1({
           navigate("/");
         }
       })();
+    } else {
+      setMessage("Please fill the following fields carefully and honestly");
     }
 
     return () => controller.abort();
@@ -343,9 +354,18 @@ export default function Form1({
 
     // Validation logic
     const newValidation = {
-      last_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.last_name),
-      first_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.first_name),
-      middle_name: /^[A-Za-z\s'-]{2,50}$/.test(formData.middle_name),
+      last_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.last_name.trim()
+        ),
+      first_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.first_name.trim()
+        ),
+      middle_name:
+        /^(?=(?:.*[A-Za-z]){3,})[A-Z][a-zA-Z]*(?:[ '-][A-Za-z]+)*$/.test(
+          formData.middle_name.trim()
+        ) || formData.middle_name == "",
       reg_number: /^\d{4}\/\d{6}$/.test(formData.reg_number),
       level: /^[0-5]{3}$/.test(formData.level),
       date_of_birth: (() => {
@@ -488,8 +508,8 @@ export default function Form1({
           window.history.replaceState({}, document.title, "/");
           submisssion(true);
         } else {
-          const { student } = ServerRes;
-          getData(student);
+          const { data } = ServerRes;
+          getData(data.student);
           setMessage(disMessage);
           window.history.replaceState({}, document.title, "/");
           submisssion(true);
@@ -563,7 +583,11 @@ export default function Form1({
             id="validationMiddlename"
             onChange={handleChange}
           />
-          <div className="valid-feedback">Good!</div>
+          <div className="valid-feedback">
+            {formData.middle_name === ""
+              ? "This field is not required"
+              : "Good!"}
+          </div>
           <div className="invalid-feedback">Invalid middle name!</div>
         </div>
 

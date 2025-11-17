@@ -29,7 +29,6 @@ export default function SignIn({ title, purpose }) {
       const controller = new AbortController();
       const timeout = setTimeout(() => {
         controller.abort();
-        throw new Error("Request timed out. Please try again.");
       }, 20000);
 
       const response = await fetch(
@@ -62,8 +61,13 @@ export default function SignIn({ title, purpose }) {
       setSuccessMessage(message);
       setLoading(false);
     } catch (err) {
-      setError(err.message);
-      setLoading(false);
+      if (err.name === "AbortError") {
+        setError("Request timed out. Please try again.");
+        setLoading(false);
+      } else {
+        setError(err.message);
+        setLoading(false);
+      }
     }
   };
   return (
